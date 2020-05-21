@@ -5,14 +5,15 @@ import { Kinetic } from './kinetic'
 import Camera from './camera'
 import {Vector, Bound} from './geometry'
 import {Body, Composite} from './physics'
-import { Engine, World, Events } from 'matter-js'
+import * as Matter from 'matter-js'
 import * as PIXI from 'pixi.js'
 import { Factory } from './factory'
 import { Sprite } from './types'
+import { Event, Events } from './event'
 // const random = require('random');
 // const seedrandom = require('seedrandom');
 
-export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Sprite}
+export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Sprite, Events}
 
 const DEFAULT_FRAME_RATE = 20;
 
@@ -28,11 +29,12 @@ export class Game {
         this.center = Vector.create(this.width/2, this.height/2);
         this.camera = new Camera();
         this.input = new Input()
-        this.entities = [];
         this.time = {
             running: false,
             tick: 0,
-            frameRate: DEFAULT_FRAME_RATE
+            frameRate: DEFAULT_FRAME_RATE,
+            milliseconds: () => { return this.time.tick * this.time.frameRate },
+            seconds: () => { return Math.ceil(this.time.milliseconds() / 1000) }
         };
         // run options
         if (setup.options != null) {
@@ -48,8 +50,8 @@ export class Game {
             height: this.height,
         })
         document.body.appendChild(this.renderer.view)
-        this.engine = Engine.create()
-        Events.on(this.engine, 'afterUpdate', () => {
+        this.engine = Matter.Engine.create()
+        Matter.Events.on(this.engine, 'afterUpdate', () => {
             this.entities.forEach(entity => {
                 if (entity.interactionBody !== null) {
                     Body.setPosition(entity.interactionBody, entity.body.position)
@@ -79,7 +81,7 @@ export class Game {
                 if (entity.interactionBody !== null)
                     entity.interactionBody.id = this.entities.length
                 entity.body.label = entity.name
-                World.addBody(this.engine.world, entity.body)
+                Matter.World.addBody(this.engine.world, entity.body)
                 this.entities.push(entity)
                 return entity
             },
@@ -87,6 +89,9 @@ export class Game {
                 this.entities.push(...entities)
                 return entities
             },
+            event: (event: Event): void => {
+                this.events.push(event)
+            }
         }
         this.create(this);
         this.renderer.loader.load( () => {
@@ -117,10 +122,11 @@ export class Game {
     time: TimeKeeper;
     interval: NodeJS.Timer;
     controller: any
-    engine: Engine
-    entities : Entity[]; // creates an ordered list of entities
+    engine: Matter.Engine
+    entities : Entity[] = []; // creates an ordered list of entities
     add : any;
-    input: Input
+    input: Input;
+    events: Event[] = [];
 
     start() {
         console.log("starting game");
@@ -129,6 +135,8 @@ export class Game {
     }
 
     run() {
+        // execute events
+        this.eventLoop()
         // read inputs and freeze state
         this.input.stopListening()
         // actuate controllers
@@ -138,7 +146,7 @@ export class Game {
         // Unfreeze inputs and listen again
         this.input.startListening()
         // update world via engine engine
-        Engine.update(this.engine, this.time.frameRate)
+        Matter.Engine.update(this.engine, this.time.frameRate)
         // camera
         this.camera.update()
         // render all entities
@@ -177,6 +185,14 @@ export class Game {
         })
     }
 
+    eventLoop() {
+        this.events.forEach(event => {
+            if (event.conditional(this.time)) {
+                event.execution()
+            }
+        })
+    }
+
     bodies(): Body[] {
         return Composite.allBodies(this.engine.world)
     }
@@ -202,7 +218,9 @@ export class Game {
 export type TimeKeeper  = {
     running : boolean,
     tick : number,
-    frameRate: number
+    frameRate: number,
+    milliseconds: () => number,
+    seconds: () => number,
 }
 
 type Option = (game: Game) => void
