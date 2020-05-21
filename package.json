@@ -1,0 +1,27 @@
+{
+  "name": "entropy",
+  "version": "1.0.0",
+  "description": "2D game engine",
+  "main": "src/game.ts",
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "keywords": [
+    "game",
+    "engine"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "jest": "^25.5.2",
+    "ts-jest": "^25.4.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/matter-js": "^0.14.2",
+    "matter-js": "^0.14.2",
+    "pixi.js": "^5.2.3"
+  }
+}
