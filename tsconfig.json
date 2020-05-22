@@ -5,11 +5,16 @@
     "module": "es6",
     "target": "es5",
     "jsx": "react",
+    "declaration": true,
     "allowJs": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "types": [
       "node"
+    ],
+    "exclude": [
+      "node_modules",
+      "tests"
     ]
   }
 }

@@ -64,35 +64,7 @@ export class Game {
                 this.run()
             }
         }, this.time.frameRate);
-        this.add = {
-            spritesheet: (source: string) => {
-                this.renderer.loader.add('spritesheet', source)
-            },
-            entity: (entity: Entity) => {
-                this.entities.push(entity)
-            },
-            newEntity: (options: EntityOptions) : Entity => {
-                let entity = new Entity(options);
-                console.log(entity.name)
-                if (entity.sprite !== undefined) {
-                    this.renderer.stage.addChild(entity.sprite)
-                }
-                entity.body.id = this.entities.length;
-                if (entity.interactionBody !== null)
-                    entity.interactionBody.id = this.entities.length
-                entity.body.label = entity.name
-                Matter.World.addBody(this.engine.world, entity.body)
-                this.entities.push(entity)
-                return entity
-            },
-            entities: (entities: Entity[]): Entity[] => {
-                this.entities.push(...entities)
-                return entities
-            },
-            event: (event: Event): void => {
-                this.events.push(event)
-            }
-        }
+
         this.create(this);
         this.renderer.loader.load( () => {
             this.entities.forEach(entity => {
@@ -124,7 +96,27 @@ export class Game {
     controller: any
     engine: Matter.Engine
     entities : Entity[] = []; // creates an ordered list of entities
-    add : any;
+    add = {
+        spritesheet: (source: string) => {
+            this.renderer.loader.add('spritesheet', source)
+        },
+        entity: (entity: Entity): void => {
+            this.registerEntity(entity)
+        },
+        newEntity: (options: EntityOptions) : Entity => {
+            let entity = new Entity(options);
+            this.registerEntity(entity)
+            return entity
+        },
+        entities: (entities: Entity[]): void => {
+            entities.forEach(entity => {
+                this.registerEntity(entity)
+            })
+        },
+        event: (event: Event): void => {
+            this.events.push(event)
+        }
+    }
     input: Input;
     events: Event[] = [];
 
@@ -180,8 +172,12 @@ export class Game {
     setRender() {
         this.camera.update()
         this.entities.forEach(entity => {
-            entity.sprite.x = this.camera.pos.x + entity.body.position.x;
-            entity.sprite.y = this.camera.pos.y - entity.body.position.y;
+            if (entity.sprite !== null) {
+                entity.sprite.x = this.camera.pos.x + entity.body.position.x;
+                entity.sprite.y = this.camera.pos.y - entity.body.position.y;
+            } else {
+                Matter.World.remove(this.engine.world, entity.body)
+            }
         })
     }
 
@@ -199,6 +195,17 @@ export class Game {
 
     convertGraphicToSprite(shape: PIXI.Graphics): PIXI.Sprite {
         return new PIXI.Sprite(this.renderer.renderer.generateTexture(shape, PIXI.SCALE_MODES.LINEAR, 1))
+    }
+
+    private registerEntity(entity: Entity): void {
+        if (entity.sprite !== undefined)
+            this.renderer.stage.addChild(entity.sprite)
+        entity.body.id = this.entities.length;
+        if (entity.interactionBody !== null)
+            entity.interactionBody.id = this.entities.length
+        entity.body.label = entity.name
+        Matter.World.addBody(this.engine.world, entity.body)
+        this.entities.push(entity)
     }
 
     static withFrameRate(frameRate: number) : Option {

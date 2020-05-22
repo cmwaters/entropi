@@ -1,17 +1,23 @@
 {
-  "name": "entropy",
-  "version": "1.0.0",
+  "name": "entropy-engine",
+  "version": "0.1.0",
   "description": "2D game engine",
-  "main": "src/game.ts",
+  "main": "dist/game.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "prepublish": "tsc"
   },
   "keywords": [
     "game",
     "engine"
   ],
-  "author": "",
+  "author": "Callum Waters",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmwaters/entropy.git"
+  },
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^25.2.1",

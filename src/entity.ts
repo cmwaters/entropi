@@ -9,7 +9,7 @@ import { Controller } from './controller'
 export class Entity {
     name: string;
     camera: Camera;
-    sprite: Sprite;
+    sprite: Sprite = null;
     spriteName: string = "";
     body: Body = null;
     interactionBody: Body = null;
@@ -68,6 +68,11 @@ export class Entity {
             withDynamicSystem: this.kinetic,
             addInteractionZone: cloneInteraction,
         });
+    }
+
+    destroy() {
+        this.sprite.destroy();
+        this.sprite = null;
     }
 
 }
