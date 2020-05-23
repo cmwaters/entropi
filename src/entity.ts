@@ -1,15 +1,16 @@
 import {Vector, Bound} from "./geometry";
 import Camera from './camera'
 import { Body } from './physics'
-import { Sprite } from "./types"
+// import { Sprite } from "./types"
 import { Kinetic } from "./kinetic"
 import { Controller } from './controller'
+import { Sprite, Graphics } from 'pixi.js'
 
 // Entity is by default static
 export class Entity {
     name: string;
     camera: Camera;
-    sprite: Sprite = null;
+    sprite: Sprite | Graphics = null;
     spriteName: string = "";
     body: Body = null;
     interactionBody: Body = null;
@@ -80,7 +81,7 @@ export class Entity {
 export type EntityOptions = {
     name: string,
     usingBody: Body,
-    fromSprite?: Sprite,
+    fromSprite?: Sprite | Graphics,
     fromSpriteName?: string,
     withControllers?: Controller[],
     withDynamicSystem?: Kinetic,

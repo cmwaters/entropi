@@ -1,13 +1,13 @@
 {
-  "name": "entropy-engine",
+  "name": "entropic",
   "version": "0.1.0",
   "description": "2D game engine",
   "main": "dist/game.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/game.d.ts",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
-    "prepublish": "tsc"
+    "prepublish": "rm -rf dist && tsc"
   },
   "keywords": [
     "game",
@@ -20,9 +20,11 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^25.2.3",
     "jest": "^25.5.2",
     "ts-jest": "^25.4.0",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {

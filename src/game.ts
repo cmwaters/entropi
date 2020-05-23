@@ -8,12 +8,12 @@ import {Body, Composite} from './physics'
 import * as Matter from 'matter-js'
 import * as PIXI from 'pixi.js'
 import { Factory } from './factory'
-import { Sprite } from './types'
+// import { Sprite } from './types'
 import { Event, Events } from './event'
 // const random = require('random');
 // const seedrandom = require('seedrandom');
 
-export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Sprite, Events}
+export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Events}
 
 const DEFAULT_FRAME_RATE = 20;
 
