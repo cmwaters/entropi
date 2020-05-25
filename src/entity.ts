@@ -6,7 +6,6 @@ import { Kinetic } from "./kinetic"
 import { Controller } from './controller'
 import { Sprite, Graphics } from 'pixi.js'
 
-// Entity is by default static
 export class Entity {
     name: string;
     camera: Camera;
@@ -72,8 +71,10 @@ export class Entity {
     }
 
     destroy() {
-        this.sprite.destroy();
-        this.sprite = null;
+        if (this.sprite !== null) {
+            this.sprite.destroy();
+            this.sprite = null;
+        }
     }
 
 }
