@@ -21,7 +21,7 @@ export class Input {
             if (that.listening) {
                 for (let key in that.Key) {
                     let keySet = that.Key[key];
-                    if (keySet.code === e.key) {
+                    if (keySet.code === e.code) {
                         keySet.state = true;
                     }
                 }
@@ -31,7 +31,7 @@ export class Input {
             if (that.listening) {
                 for (let key in that.Key) {
                     let keySet = that.Key[key];
-                    if (keySet.code === e.key) {
+                    if (keySet.code === e.code) {
                         keySet.state = false;
                     }
                 }

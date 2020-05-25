@@ -10,8 +10,6 @@ import * as PIXI from 'pixi.js'
 import { Factory } from './factory'
 // import { Sprite } from './types'
 import { Event, Events } from './event'
-// const random = require('random');
-// const seedrandom = require('seedrandom');
 
 export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Events}
 
@@ -93,7 +91,6 @@ export class Game {
     center: Vector;
     time: TimeKeeper;
     interval: NodeJS.Timer;
-    controller: any
     engine: Matter.Engine
     entities : Entity[] = []; // creates an ordered list of entities
     add = {
@@ -124,7 +121,6 @@ export class Game {
     events: Event[] = [];
 
     start() {
-        console.log("starting game");
         this.time.running = true;
         this.renderer.start()
     }
@@ -144,8 +140,8 @@ export class Game {
         Matter.Engine.update(this.engine, this.time.frameRate)
         // camera
         this.camera.update()
-        // render all entities
-        this.setRender()
+        // update the position of all entities
+        this.prepareRender()
         // reset
         this.time.tick++
     }
@@ -172,7 +168,7 @@ export class Game {
         return null
     }
 
-    setRender() {
+    prepareRender() {
         this.camera.update()
         this.entities.forEach(entity => {
             if (entity.sprite !== null) {
