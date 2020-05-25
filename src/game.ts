@@ -115,6 +115,9 @@ export class Game {
         },
         event: (event: Event): void => {
             this.events.push(event)
+        },
+        sprite: (sprite: PIXI.Sprite | PIXI.Graphics): void => {
+            this.renderer.stage.addChild(sprite)
         }
     }
     input: Input;
