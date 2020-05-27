@@ -8,10 +8,10 @@ import {Body, Composite} from './physics'
 import * as Matter from 'matter-js'
 import * as PIXI from 'pixi.js'
 import { Factory } from './factory'
-// import { Sprite } from './types'
+import { Sprite, Renderer, Area } from './types'
 import { Event, Events } from './event'
 
-export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Events}
+export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Events, Sprite, Renderer, Area}
 
 const DEFAULT_FRAME_RATE = 20;
 
@@ -19,12 +19,8 @@ export class Game {
 
     constructor(setup : Setup) {
         // set variables
-        this.height = setup.height;
-        this.width = setup.width;
         this.create = setup.create;
         this.update = setup.update;
-        this.backgroundColor = 0xffffff;
-        this.center = Vector.create(this.width/2, this.height/2);
         this.camera = new Camera();
         this.input = new Input()
         this.time = {
@@ -34,20 +30,9 @@ export class Game {
             milliseconds: () => { return this.time.tick * this.time.frameRate },
             seconds: () => { return Math.ceil(this.time.milliseconds() / 1000) }
         };
-        // run options
-        if (setup.options != null) {
-            setup.options.forEach(option => {
-                option(this)
-            })
-        }
-        // initiate stuff
-        this.renderer = new PIXI.Application({
-            backgroundColor: this.backgroundColor,
-            autoStart: this.autoStart,
-            width: this.width,
-            height: this.height,
-        })
-        document.body.appendChild(this.renderer.view)
+        this.renderer = setup.renderer
+        this.screen = setup.renderer.size;
+        this.center = Vector.create(this.screen.width/2, this.screen.height/2);
         this.engine = Matter.Engine.create()
         Matter.Events.on(this.engine, 'afterUpdate', () => {
             this.entities.forEach(entity => {
@@ -62,31 +47,24 @@ export class Game {
                 this.run()
             }
         }, this.time.frameRate);
-
-        this.create(this);
-        this.renderer.loader.load( () => {
-            this.entities.forEach(entity => {
-                if (entity.spriteName !== "") {
-                    entity.sprite = PIXI.Sprite.from(entity.spriteName)
-                    entity.sprite.x = entity.body.position.x;
-                    entity.sprite.y = entity.body.position.y;
-                    console.log("Added sprite: " + entity.sprite.x + " - " + entity.sprite.y)
-                    this.renderer.stage.addChild(entity.sprite)
-                }
+        // run options
+        if (setup.options != null) {
+            setup.options.forEach(option => {
+                option(this)
             })
-            if (this.autoStart) {
-                this.start();
-            }
-        });
+        }
+        this.create(this)
+        if (this.autoStart) {
+            this.start();
+        }
     }
 
-    width: number;
-    height: number;
+    screen: Area;
     create: (game: Game) => void;
     update: (game: Game) => void;
     backgroundColor: number
     autoStart: boolean = true;
-    renderer: PIXI.Application;
+    renderer: Renderer;
     camera: Camera;
     center: Vector;
     time: TimeKeeper;
@@ -94,9 +72,9 @@ export class Game {
     engine: Matter.Engine
     entities : Entity[] = []; // creates an ordered list of entities
     add = {
-        spritesheet: (source: string) => {
-            this.renderer.loader.add('spritesheet', source)
-        },
+        // spritesheet: (source: string) => {
+        //     this.renderer.loader.add('spritesheet', source)
+        // },
         entity: (entity: Entity): void => {
             this.registerEntity(entity)
         },
@@ -114,7 +92,7 @@ export class Game {
             this.events.push(event)
         },
         sprite: (sprite: PIXI.Sprite | PIXI.Graphics): void => {
-            this.renderer.stage.addChild(sprite)
+            this.renderer.add(sprite)
         }
     }
     input: Input;
@@ -122,7 +100,6 @@ export class Game {
 
     start() {
         this.time.running = true;
-        this.renderer.start()
     }
 
     run() {
@@ -136,7 +113,7 @@ export class Game {
         this.update(this)
         // Unfreeze inputs and listen again
         this.input.startListening()
-        // update world via engine engine
+        // update world via physics engine
         Matter.Engine.update(this.engine, this.time.frameRate)
         // camera
         this.camera.update()
@@ -147,7 +124,6 @@ export class Game {
     }
 
     stop() {
-        this.renderer.stop()
         this.time.running = false;
     }
 
@@ -171,11 +147,16 @@ export class Game {
     prepareRender() {
         this.camera.update()
         this.entities.forEach(entity => {
-            if (entity.sprite !== null) {
+            if (entity.deleteFlag) {
+                if (entity.sprite !== null) {
+                    this.renderer.remove(entity.sprite)
+                }
+                if (entity.body !== null) {
+                    Matter.World.remove(this.engine.world, entity.body)
+                }
+            } else {
                 entity.sprite.x = this.camera.pos.x + entity.body.position.x;
                 entity.sprite.y = this.camera.pos.y - entity.body.position.y;
-            } else {
-                Matter.World.remove(this.engine.world, entity.body)
             }
         })
     }
@@ -192,13 +173,9 @@ export class Game {
         return Composite.allBodies(this.engine.world)
     }
 
-    convertGraphicToSprite(shape: PIXI.Graphics): PIXI.Sprite {
-        return new PIXI.Sprite(this.renderer.renderer.generateTexture(shape, PIXI.SCALE_MODES.LINEAR, 1))
-    }
-
     private registerEntity(entity: Entity): void {
         if (entity.sprite !== undefined)
-            this.renderer.stage.addChild(entity.sprite)
+            this.renderer.add(entity.sprite)
         entity.body.id = this.entities.length;
         if (entity.interactionBody !== null)
             entity.interactionBody.id = this.entities.length
@@ -215,7 +192,7 @@ export class Game {
 
     static withBackGroundColor(color: number) : Option {
         return (game : Game) => {
-            game.backgroundColor = color
+            game.renderer.setBackgroundColour(color)
         }
     }
 
@@ -232,10 +209,9 @@ export type TimeKeeper  = {
 type Option = (game: Game) => void
 
 export type Setup = {
-    width : number,
-    height : number,
-    create : (game: Game) => any,
-    update : (game: Game) => any,
-    options? : Option[],
+    renderer: Renderer,
+    create: (game: Game) => any,
+    update: (game: Game) => any,
+    options?: Option[],
 }
 

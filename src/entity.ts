@@ -1,21 +1,21 @@
 import {Vector, Bound} from "./geometry";
 import Camera from './camera'
 import { Body } from './physics'
-// import { Sprite } from "./types"
+import { Sprite } from "./types"
 import { Kinetic } from "./kinetic"
 import { Controller } from './controller'
-import { Sprite, Graphics } from 'pixi.js'
 
 export class Entity {
     name: string;
     camera: Camera;
-    sprite: Sprite | Graphics = null;
+    sprite: Sprite = null;
     spriteName: string = "";
     body: Body = null;
     interactionBody: Body = null;
     controllers: Controller[] = [];
     kinetic: Kinetic;
     offset: Vector;
+    deleteFlag: boolean = false
 
     constructor(options: EntityOptions) {
         this.name = options.name
@@ -71,10 +71,7 @@ export class Entity {
     }
 
     destroy() {
-        if (this.sprite !== null) {
-            this.sprite.destroy();
-            this.sprite = null;
-        }
+        this.deleteFlag = true
     }
 
 }
@@ -82,7 +79,7 @@ export class Entity {
 export type EntityOptions = {
     name: string,
     usingBody: Body,
-    fromSprite?: Sprite | Graphics,
+    fromSprite?: Sprite,
     fromSpriteName?: string,
     withControllers?: Controller[],
     withDynamicSystem?: Kinetic,

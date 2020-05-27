@@ -42,7 +42,7 @@ export namespace Controllers {
             if (input.Key.LEFT.state || input.Key.A.state) desiredVelocity.x -= entity.kinetic.maxSpeed
             if (input.Key.RIGHT.state || input.Key.D.state) desiredVelocity.x += entity.kinetic.maxSpeed
             let diff = Vector.sub(desiredVelocity, entity.body.velocity)
-            let proportionalGain = 0.02
+            let proportionalGain = 0.0001
             Body.applyForce(entity.body, entity.body.position, Vector.mult(diff, proportionalGain))
 
         }
