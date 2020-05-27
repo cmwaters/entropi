@@ -1,17 +1,11 @@
 import {Entity, EntityOptions} from './entity'
 import {Input} from './input'
-import { Controllers } from './controller'
-import { Kinetic } from './kinetic'
 import Camera from './camera'
-import {Vector, Bound} from './geometry'
+import {Vector, Area} from './geometry'
 import {Body, Composite} from './physics'
 import * as Matter from 'matter-js'
-import * as PIXI from 'pixi.js'
-import { Factory } from './factory'
-import { Sprite, Renderer, Area } from './types'
-import { Event, Events } from './event'
-
-export { Camera, Vector, Entity, Kinetic, Body, Controllers, Bound, Factory, Events, Sprite, Renderer, Area}
+import { Renderer } from './renderer'
+import { Event } from './event'
 
 const DEFAULT_FRAME_RATE = 20;
 
@@ -31,7 +25,7 @@ export class Game {
             seconds: () => { return Math.ceil(this.time.milliseconds() / 1000) }
         };
         this.renderer = setup.renderer
-        this.screen = setup.renderer.size;
+        this.screen = setup.renderer.size();
         this.center = Vector.create(this.screen.width/2, this.screen.height/2);
         this.engine = Matter.Engine.create()
         Matter.Events.on(this.engine, 'afterUpdate', () => {
@@ -91,7 +85,7 @@ export class Game {
         event: (event: Event): void => {
             this.events.push(event)
         },
-        sprite: (sprite: PIXI.Sprite | PIXI.Graphics): void => {
+        sprite: (sprite: any): void => {
             this.renderer.add(sprite)
         }
     }
@@ -155,8 +149,11 @@ export class Game {
                     Matter.World.remove(this.engine.world, entity.body)
                 }
             } else {
-                entity.sprite.x = this.camera.pos.x + entity.body.position.x;
-                entity.sprite.y = this.camera.pos.y - entity.body.position.y;
+                this.renderer.update(
+                    entity.sprite,
+                    this.camera.pos.x + entity.body.position.x, 
+                    this.camera.pos.y - entity.body.position.y,
+                    entity.body.angle)
             }
         })
     }

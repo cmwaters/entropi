@@ -126,3 +126,8 @@ export type Polar = {
     angle: number,
     magnitude: number
 }
+
+export type Area = {
+    width: number,
+    height: number
+}

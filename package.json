@@ -2,8 +2,8 @@
   "name": "entropic",
   "version": "0.1.1",
   "description": "2D game engine",
-  "main": "dist/game.js",
-  "types": "dist/game.d.ts",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",

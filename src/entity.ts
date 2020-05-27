@@ -1,14 +1,13 @@
 import {Vector, Bound} from "./geometry";
 import Camera from './camera'
 import { Body } from './physics'
-import { Sprite } from "./types"
 import { Kinetic } from "./kinetic"
 import { Controller } from './controller'
 
 export class Entity {
     name: string;
     camera: Camera;
-    sprite: Sprite = null;
+    sprite: any = null;
     spriteName: string = "";
     body: Body = null;
     interactionBody: Body = null;
@@ -22,7 +21,6 @@ export class Entity {
         this.body = options.usingBody;
         if (options.fromSprite !== undefined) {
             this.sprite = options.fromSprite
-            this.offset = Vector.create(this.sprite.x, this.sprite.y);
         } else if (options.fromSpriteName !== undefined)
             this.spriteName = options.fromSpriteName;
 
@@ -34,6 +32,10 @@ export class Entity {
 
         if (options.addInteractionZone !== undefined) {
             this.interactionBody = options.addInteractionZone
+        }
+
+        if (options.spriteOffset !== undefined) {
+            this.offset = options.spriteOffset
         }
 
     };
@@ -78,10 +80,11 @@ export class Entity {
 
 export type EntityOptions = {
     name: string,
-    usingBody: Body,
-    fromSprite?: Sprite,
+    usingBody?: Body,
+    fromSprite?: any,
     fromSpriteName?: string,
     withControllers?: Controller[],
     withDynamicSystem?: Kinetic,
-    addInteractionZone?: Body
+    addInteractionZone?: Body,
+    spriteOffset?: Vector,
 }

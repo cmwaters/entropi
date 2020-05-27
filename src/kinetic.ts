@@ -1,20 +1,14 @@
 import {Vector} from "./geometry";
 
 export class Kinetic {
-    maxSpeed: number
-    acc: number;
-    isStatic: boolean = false;
+    maxSpeed: number = 1;
+    proportionalGain: number = 0.01;
 
-    static create(maxSpeed: number, acc: number, isStatic?: boolean) :Kinetic {
+    static create(ko: KineticOptions) :Kinetic {
         return {
-            maxSpeed: maxSpeed,
-            acc: acc,
-            isStatic: isStatic,
+            maxSpeed: ko.maxSpeed,
+            proportionalGain: ko.proportionalGain,
         }
-    }
-
-    static createStatic() : Kinetic {
-        return Kinetic.create(0,0, true)
     }
 
     // moves from vectorA towards vectorB by a step amount, does not overshoot
@@ -26,4 +20,9 @@ export class Kinetic {
         return Vector.project(vectorA, angle, step)
 
     }
+}
+
+export type KineticOptions = {
+    maxSpeed?: number,
+    proportionalGain?: number
 }
