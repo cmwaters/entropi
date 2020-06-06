@@ -1,4 +1,4 @@
-import {Vector} from "./geometry";
+import {Vector} from "matter-js";
 
 export class Kinetic {
     maxSpeed: number = 1;
@@ -13,12 +13,11 @@ export class Kinetic {
 
     // moves from vectorA towards vectorB by a step amount, does not overshoot
     static approach(vectorA: Vector, vectorB: Vector, step: number): Vector {
-        if (step > Vector.magnitude(Vector.sub(vectorA, vectorB))) {
+        let diff = Vector.sub(vectorA, vectorB)
+        if (step > Vector.magnitude(diff)) {
             return vectorB
         }
-        let angle = Vector.angle(vectorA, vectorB)
-        return Vector.project(vectorA, angle, step)
-
+        return Vector.mult(Vector.normalise(diff), step)
     }
 }
 

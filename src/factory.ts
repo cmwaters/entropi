@@ -1,6 +1,7 @@
 import { Entity } from './entity'
 import { Body, Collision } from './physics'
-import { Orientation, Bound, Vector } from './geometry';
+import { Orientation, } from './geometry';
+import { Bounds } from 'matter-js'
 
 const RANDOM_RETRIES = 50;
 
@@ -45,7 +46,7 @@ export namespace Factory {
     // }
 
     export class RandomDistributor {
-        constructor(public bound: Bound, public volume: number) {
+        constructor(public bound: Bounds, public volume: number) {
             this.bound = bound;
             this.volume = volume;
         }

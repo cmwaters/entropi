@@ -1,4 +1,4 @@
-import { Vector } from './geometry'
+import { Vector } from 'matter-js'
 import { Entity } from "./entity"
 
 export default class Camera {

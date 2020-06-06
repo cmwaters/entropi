@@ -1,7 +1,5 @@
-import {Bound, Vector} from "./geometry";
-import { Kinetic } from './kinetic'
-import {Body} from "matter-js";
-import {Input, Key} from "./input";
+import {Body, Vector, Bounds} from "matter-js";
+import {Input} from "./input";
 
 export class GenericController implements Controller {
     constructor(public object: any , public func: (entity: any, object: any) => void) {
@@ -49,8 +47,8 @@ export namespace Controllers {
     }
 
 
-    export function boundary(bound: Bound): Controller {
-        let func = (entity: any, bound: Bound) => {
+    export function boundary(bound: Bounds): Controller {
+        let func = (entity: any, bound: Bounds) => {
             if (entity.body.position.x > bound.max.x) {
                 Body.setPosition(entity.body, Vector.create(bound.max.x, entity.body.position.y))
                 Body.setVelocity(entity.body, Vector.create())

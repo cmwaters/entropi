@@ -1,9 +1,9 @@
 import {Entity, EntityOptions} from './entity'
 import {Input} from './input'
 import Camera from './camera'
-import {Vector, Area} from './geometry'
+import { Area } from './geometry'
 import {Body, Composite} from './physics'
-import * as Matter from 'matter-js'
+import { Engine, World, Vector, Events} from 'matter-js'
 import { Renderer } from './renderer'
 import { Event } from './event'
 
@@ -27,8 +27,8 @@ export class Game {
         this.renderer = setup.renderer
         this.screen = setup.renderer.size();
         this.center = Vector.create(this.screen.width/2, this.screen.height/2);
-        this.engine = Matter.Engine.create()
-        Matter.Events.on(this.engine, 'afterUpdate', () => {
+        this.engine = Engine.create()
+        Events.on(this.engine, 'afterUpdate', () => {
             this.entities.forEach(entity => {
                 if (entity.interactionBody !== null) {
                     Body.setPosition(entity.interactionBody, entity.body.position)
@@ -108,7 +108,7 @@ export class Game {
         // Unfreeze inputs and listen again
         this.input.startListening()
         // update world via physics engine
-        Matter.Engine.update(this.engine, this.time.frameRate)
+        Engine.update(this.engine, this.time.frameRate)
         // camera
         this.camera.update()
         // update the position of all entities
@@ -146,7 +146,7 @@ export class Game {
                     this.renderer.remove(entity.sprite)
                 }
                 if (entity.body !== null) {
-                    Matter.World.remove(this.engine.world, entity.body)
+                    World.remove(this.engine.world, entity.body)
                 }
             } else {
                 this.renderer.update(
@@ -177,7 +177,7 @@ export class Game {
         if (entity.interactionBody !== null)
             entity.interactionBody.id = this.entities.length
         entity.body.label = entity.name
-        Matter.World.addBody(this.engine.world, entity.body)
+        World.addBody(this.engine.world, entity.body)
         this.entities.push(entity)
     }
 

@@ -1,8 +1,8 @@
-import {Vector, Bound} from "./geometry";
 import Camera from './camera'
 import { Body } from './physics'
 import { Kinetic } from "./kinetic"
 import { Controller } from './controller'
+import { Vector } from 'matter-js'
 
 export class Entity {
     name: string;
