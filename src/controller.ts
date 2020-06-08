@@ -72,7 +72,7 @@ export namespace Controllers {
     export function follow(target: Vector): Controller {
         let func = (entity: any, target: Vector) => {
             if (target === null || entity.kinetic === null) { return }
-            let diff = Vector.sub(entity.position, target)
+            let diff = Vector.sub(entity.body.position, target)
             let desiredVelocity = Vector.mult(Vector.normalise(diff), entity.kinetic.maxSpeed)
             let velocityDiff = Vector.sub(desiredVelocity, entity.body.velocity)
             Body.applyForce(entity.body, entity.body.position, Vector.mult(velocityDiff, entity.kinetic.proportionalGain))

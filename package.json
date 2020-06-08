@@ -1,6 +1,6 @@
 {
-  "name": "entropic",
-  "version": "0.1.4",
+  "name": "entropi",
+  "version": "0.1.5",
   "description": "2D game engine",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -16,7 +16,7 @@
   "author": "Callum Waters",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cmwaters/entropy.git"
+    "url": "git+https://github.com/cmwaters/entropi.git"
   },
   "license": "ISC",
   "devDependencies": {
@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@types/matter-js": "^0.14.2",
-    "matter-js": "^0.14.2",
-    "pixi.js": "^5.2.3"
+    "matter-js": "^0.14.2"
   }
 }
