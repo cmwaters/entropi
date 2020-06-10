@@ -4,7 +4,7 @@ import {Input} from './input'
 import { Controllers, Controller } from './controller'
 import { Kinetic } from './kinetic'
 import Camera from './camera'
-import {Vector, Area} from './geometry'
+import {Vector, Area, Geometry} from './geometry'
 import {Body, Composite} from './physics'
 import { Factory } from './factory'
 import { Renderer } from './renderer'
@@ -14,5 +14,5 @@ import { Event, Events } from './event'
 
 export { Game, Input, Camera, Composite, Vector, Entity, Kinetic, Body, Controllers,
     Factory, Events, Renderer, Area, Event, EntityOptions, Bodies, Controller,
-    Bounds, Query, 
+    Bounds, Query, Geometry
 }
