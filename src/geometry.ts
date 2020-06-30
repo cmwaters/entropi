@@ -1,11 +1,16 @@
-import * as Matter from "matter-js";
-
 // Adds greater functionality to the vector class in matter-js
 // All angles are expressed in radians
 export namespace Geometry {
 
     export function string(vector: Vector): string {
         return "x: " + vector.x + " y: " + vector.y
+    }
+    
+    export function create(x: number = 0, y: number = 0): Vector {
+        return {x, y}
+    }
+    export function add(vectorA: Vector, vectorB: Vector): Vector {
+        return {x: vectorA.x + vectorB.x, y: vectorA.y + vectorB.y}
     }
 
     // angle should be relative to the x axis

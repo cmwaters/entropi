@@ -1,25 +1,23 @@
 import { Entity } from './entity'
-import { Body, Collision } from './physics'
 import { Orientation, } from './geometry';
-import { Bounds } from 'matter-js'
 
 const RANDOM_RETRIES = 50;
 
 export namespace Factory {
 
-    export function generate(model: Entity, randomizer: Randomizer, distributor: DefinedDistributor): Entity[] {
-        let entities: Entity[] = [];
-        for (let i = 0; i < distributor.units.length; i++) {
-            let replica = model.clone()
-            Body.setPosition(replica.body, distributor.units[i].pos)
-            // also need to set orientation
-            randomizer.variants.forEach(variant => {
-                variant.generate(replica)
-            })
-            entities.push(replica)
-        }
-        return entities
-    }
+    // export function generate(model: Entity, randomizer: Randomizer, distributor: DefinedDistributor): Entity[] {
+    //     let entities: Entity[] = [];
+    //     for (let i = 0; i < distributor.units.length; i++) {
+    //         let replica = model.clone()
+    //         // Body.setPosition(replica.body, distributor.units[i].pos)
+    //         // also need to set orientation
+    //         randomizer.variants.forEach(variant => {
+    //             variant.generate(replica)
+    //         })
+    //         entities.push(replica)
+    //     }
+    //     return entities
+    // }
 
     // export function generateRandom(model: Entity, bodies: Body[], randomizer: Randomizer, distributor: RandomDistributor): Entity[] {
     //     let entities: Entity[] = [];
@@ -45,12 +43,12 @@ export namespace Factory {
     //     return entities
     // }
 
-    export class RandomDistributor {
-        constructor(public bound: Bounds, public volume: number) {
-            this.bound = bound;
-            this.volume = volume;
-        }
-    }
+    // export class RandomDistributor {
+    //     constructor(public bound: Bounds, public volume: number) {
+    //         this.bound = bound;
+    //         this.volume = volume;
+    //     }
+    // }
 
     export class DefinedDistributor {
         constructor(public units: Orientation[]) {

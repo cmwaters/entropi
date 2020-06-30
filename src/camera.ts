@@ -1,16 +1,17 @@
-import { Vector } from 'matter-js'
+import { Vector, Geometry } from './geometry'
 import { Entity } from "./entity"
+import { Body } from './physics'
 
-export default class Camera {
+export class Camera {
     origin : Vector
     pos : Vector;
     delta : Vector;
     tracking: Vector = null;
 
-    constructor(pos : Vector = Vector.create()) {
-        this.origin = Vector.clone(pos)
+    constructor(pos : Vector = Geometry.create()) {
+        this.origin = Geometry.create(pos.x, pos.y)
         this.pos = pos
-        this.delta = Vector.create()
+        this.delta = Geometry.create()
     }
 
     shift(x : number, y : number): void {
@@ -23,13 +24,13 @@ export default class Camera {
             this.pos.x = this.origin.x - this.tracking.x;
             this.pos.y = this.origin.y + this.tracking.y;
         } else {
-            this.pos = Vector.add(this.pos, this.delta)
-            this.delta = Vector.create();
+            this.pos = Geometry.add(this.pos, this.delta)
+            this.delta = Geometry.create();
         }
     }
 
     follow(entity: Entity): void {
-        this.tracking = entity.body.position
+        this.tracking = entity.body.pos()
     }
 
     output(): string {

@@ -1,18 +1,17 @@
 import { Game } from './game'
-import {Entity, EntityOptions} from './entity'
-import {Input} from './input'
+import { Entity, EntityOptions} from './entity'
+import { Input} from './input'
 import { Controllers, Controller } from './controller'
 import { Kinetic } from './kinetic'
-import Camera from './camera'
-import {Vector, Area, Geometry} from './geometry'
-import {Body, Composite} from './physics'
+import { Camera } from './camera'
+import { Vector, Area, Geometry} from './geometry'
+import { Physics, Body } from './physics'
 import { Factory } from './factory'
 import { Renderer } from './renderer'
-import { Bodies, Bounds, Query } from 'matter-js'
 import { Event, Events } from './event'
 
 
-export { Game, Input, Camera, Composite, Vector, Entity, Kinetic, Body, Controllers,
-    Factory, Events, Renderer, Area, Event, EntityOptions, Bodies, Controller,
-    Bounds, Query, Geometry
+export { Game, Input, Camera, Physics, Entity, Kinetic, Controllers,
+    Factory, Events, Renderer, Area, Event, EntityOptions, Controller,
+    Geometry, Vector, Body
 }

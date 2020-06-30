@@ -1,21 +1,15 @@
-import * as Matter from 'matter-js'
+import { Vector } from './geometry'
 
-export class Body extends Matter.Body{
-
-    static circle(x: number, y: number, radius: number, options?: Matter.IBodyDefinition, maxSides?: number) : Body {
-        return Matter.Bodies.circle(x, y, radius, options, maxSides)
-    }
-
-    static extendVertices(body: Body, offset: number): Body {
-        return body
-    }
-
-    static cloneShape(body: Body) {
-        return Body.create({vertices: body.vertices})
-    }
-
+export interface Physics {
+    update(delta: number): void
+    
+    add(body: Body): void
+    
+    remove(body: Body): void
 }
 
-export class Composite extends Matter.Composite {}
+export interface Body {
+    pos(): Vector
 
-export class Collision extends Matter.Query {}
+    angle(): number
+}

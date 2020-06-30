@@ -1,6 +1,6 @@
 {
   "name": "entropi",
-  "version": "0.1.5",
+  "version": "0.1.8",
   "description": "2D game engine",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -27,8 +27,5 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.8.3"
   },
-  "dependencies": {
-    "@types/matter-js": "^0.14.2",
-    "matter-js": "^0.14.2"
-  }
+  "dependencies": {}
 }

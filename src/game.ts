@@ -1,13 +1,20 @@
-import {Entity, EntityOptions} from './entity'
-import {Input} from './input'
-import Camera from './camera'
+import { Entity, EntityOptions } from './entity'
+import { Input } from './input'
+import { Camera } from './camera'
 import { Area } from './geometry'
-import {Body, Composite} from './physics'
-import { Engine, World, Vector, Events} from 'matter-js'
+import { Physics } from './physics'
 import { Renderer } from './renderer'
 import { Event } from './event'
 
 const DEFAULT_FRAME_RATE = 20;
+
+export type Setup = {
+    renderer: Renderer,
+    physics: Physics,
+    create: (game: Game) => any,
+    update: (game: Game) => any,
+    options?: Option[],
+}
 
 export class Game {
 
@@ -17,25 +24,10 @@ export class Game {
         this.update = setup.update;
         this.camera = new Camera();
         this.input = new Input()
-        this.time = {
-            running: false,
-            tick: 0,
-            frameRate: DEFAULT_FRAME_RATE,
-            milliseconds: () => { return this.time.tick * this.time.frameRate },
-            seconds: () => { return Math.ceil(this.time.milliseconds() / 1000) }
-        };
-        this.renderer = setup.renderer
+        this.renderer = setup.renderer;
+        this.physics = setup.physics; 
         this.screen = setup.renderer.size();
-        this.center = Vector.create(this.screen.width/2, this.screen.height/2);
-        this.engine = Engine.create()
-        Events.on(this.engine, 'afterUpdate', () => {
-            this.entities.forEach(entity => {
-                if (entity.interactionBody !== null) {
-                    Body.setPosition(entity.interactionBody, entity.body.position)
-                }
-            })
-        })
-        this.engine.world.gravity.y = 0;
+        // start interval
         this.interval = setInterval(() => {
             if (this.time.running) {
                 this.run()
@@ -52,6 +44,30 @@ export class Game {
             this.start();
         }
     }
+    
+    // this is the game loop
+    run() {
+        // execute events
+        this.eventLoop()
+        // read inputs and freeze state
+        this.input.stopListening()
+        // actuate controllers
+        this.actuateControllers()
+        // execute game logic
+        this.update(this)
+        // Unfreeze inputs and listen again
+        this.input.startListening()
+        // update world via physics engine
+        this.physics.update(this.time.frameRate)
+        // update camera
+        this.camera.update()
+        // update the position of all entities
+        this.prepareRender()
+        // render all entities
+        this.renderer.render()
+        // reset
+        this.time.tick++
+    }
 
     screen: Area;
     create: (game: Game) => void;
@@ -60,15 +76,10 @@ export class Game {
     autoStart: boolean = true;
     renderer: Renderer;
     camera: Camera;
-    center: Vector;
-    time: TimeKeeper;
     interval: NodeJS.Timer;
-    engine: Matter.Engine
+    physics: Physics
     entities : Entity[] = []; // creates an ordered list of entities
     add = {
-        // spritesheet: (source: string) => {
-        //     this.renderer.loader.add('spritesheet', source)
-        // },
         entity: (entity: Entity): void => {
             this.registerEntity(entity)
         },
@@ -89,32 +100,19 @@ export class Game {
             this.renderer.add(sprite)
         }
     }
+    
+    time: TimeKeeper = {
+        running: false,
+        tick: 0,
+        frameRate: DEFAULT_FRAME_RATE,
+        milliseconds: () => { return this.time.tick * this.time.frameRate },
+        seconds: () => { return Math.ceil(this.time.milliseconds() / 1000) }
+    };
     input: Input;
     events: Event[] = [];
 
     start() {
         this.time.running = true;
-    }
-
-    run() {
-        // execute events
-        this.eventLoop()
-        // read inputs and freeze state
-        this.input.stopListening()
-        // actuate controllers
-        this.actuateControllers()
-        // execute game logic
-        this.update(this)
-        // Unfreeze inputs and listen again
-        this.input.startListening()
-        // update world via physics engine
-        Engine.update(this.engine, this.time.frameRate)
-        // camera
-        this.camera.update()
-        // update the position of all entities
-        this.prepareRender()
-        // reset
-        this.time.tick++
     }
 
     stop() {
@@ -146,14 +144,16 @@ export class Game {
                     this.renderer.remove(entity.sprite)
                 }
                 if (entity.body !== null) {
-                    World.remove(this.engine.world, entity.body)
+                    this.physics.remove(entity.body)
+                    // World.remove(this.engine.world, entity.body)
                 }
             } else {
+                let pos = entity.body.pos()
                 this.renderer.update(
                     entity.sprite,
-                    this.camera.pos.x + entity.body.position.x, 
-                    this.camera.pos.y - entity.body.position.y,
-                    entity.body.angle)
+                    this.camera.pos.x + pos.x, 
+                    this.camera.pos.y - pos.y,
+                    entity.body.angle())
             }
         })
     }
@@ -166,18 +166,10 @@ export class Game {
         })
     }
 
-    bodies(): Body[] {
-        return Composite.allBodies(this.engine.world)
-    }
-
     private registerEntity(entity: Entity): void {
         if (entity.sprite !== undefined)
             this.renderer.add(entity.sprite)
-        entity.body.id = this.entities.length;
-        if (entity.interactionBody !== null)
-            entity.interactionBody.id = this.entities.length
-        entity.body.label = entity.name
-        World.addBody(this.engine.world, entity.body)
+        this.physics.add(entity.body)
         this.entities.push(entity)
     }
 
@@ -204,11 +196,4 @@ export type TimeKeeper  = {
 }
 
 type Option = (game: Game) => void
-
-export type Setup = {
-    renderer: Renderer,
-    create: (game: Game) => any,
-    update: (game: Game) => any,
-    options?: Option[],
-}
 
